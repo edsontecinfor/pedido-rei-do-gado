@@ -388,19 +388,23 @@
 
   <script>
     function decodeSafe(value) {
-      if (value == null) return "";
-      const raw = String(value);
-      try {
-        return decodeURIComponent(raw.replace(/\+/g, "%20"));
-      } catch (e) {
-        try {
-          return decodeURIComponent(raw);
-        } catch (e2) {
-          return raw.replace(/\+/g, " ");
-        }
-      }
-    }
+  if (value == null) return "";
+  const raw = String(value);
 
+  try {
+    return decodeURIComponent(raw.replace(/\+/g, "%20"))
+      .replace(/_/g, " "); // 👈 ESSA LINHA É A SOLUÇÃO
+  } catch (e) {
+    try {
+      return decodeURIComponent(raw)
+        .replace(/_/g, " ");
+    } catch (e2) {
+      return raw
+        .replace(/\+/g, " ")
+        .replace(/_/g, " ");
+    }
+  }
+}
    function getParams() {
   const raw = window.location.search.substring(1);
 
