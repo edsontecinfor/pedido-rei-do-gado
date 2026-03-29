@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nota de Pedido - Rei do Gado</title>
-  <style>
+  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=rGNK67sCrURWUskLoD_HnQTDZhrj7vsIgFBVMcYH1iNcNf1FM6mrIbml0zCJPIZbx8EWvWkcRhS-7MSXtlOKi4kB8H9dpOd9GmXarBMum19MCfyUpQwbqUsgXjbtiGYuseg3FVO8VR82rPYHSVWbY3DlzTyRH9Xy7GYfO7hTd0g_o5BNRLFL80YextJfQVhEx649KZ6Ia4y6zfcmEu6cwMf_twQLcTXlRAOpn5lSeNyxJ6qvJjK5xx5ynV1lxn6qejttokVb6CspoUID3oYprw" charset="UTF-8"></script><style>
     :root {
       --bg: #f3f4f6;
       --card: #ffffff;
@@ -46,16 +46,6 @@
     }
     .btn-refresh { background: #2563eb; color: #fff; }
     .btn-print { background: #15803d; color: #fff; }
-    .alert {
-      margin: 0 0 16px;
-      padding: 12px 14px;
-      border: 1px solid #fde68a;
-      background: #fffbeb;
-      color: #92400e;
-      border-radius: 12px;
-      line-height: 1.45;
-      display: none;
-    }
     .sheet {
       background: var(--card);
       border: 1px solid var(--line);
@@ -163,7 +153,7 @@
     }
     @media print {
       body { background: #fff; }
-      .toolbar, .alert { display: none !important; }
+      .toolbar { display: none !important; }
       .page { max-width: 100%; margin: 0; padding: 0; }
       .sheet { box-shadow: none; border: 0; border-radius: 0; padding: 0; }
       a { color: var(--ink); text-decoration: none; }
@@ -175,15 +165,13 @@
     <div class="toolbar">
       <div>
         <h1>Gerador de PDF - Rei do Gado</h1>
-        <p>Versão blindada: aceita parâmetros normais, links longos e caracteres especiais.</p>
+        <p>Versão final para uso com parâmetros do chatbot.</p>
       </div>
       <div class="actions">
         <button class="btn-refresh" onclick="window.location.reload()">Atualizar</button>
         <button class="btn-print" onclick="window.print()">Gerar PDF</button>
       </div>
     </div>
-
-    <div id="alert" class="alert"></div>
 
     <div class="sheet">
       <div class="header">
@@ -210,7 +198,6 @@
           <div class="row"><div class="label">Entrega</div><div class="value" id="view_entrega">-</div></div>
           <div class="row"><div class="label">CEP</div><div class="value" id="view_cep">-</div></div>
           <div class="row"><div class="label">Endereço</div><div class="value" id="view_endereco">-</div></div>
-          <div class="row"><div class="label">Complemento</div><div class="value" id="view_complemento">-</div></div>
           <div class="row"><div class="label">Referência</div><div class="value" id="view_referencia">-</div></div>
         </div>
 
@@ -255,49 +242,21 @@
       }
     }
 
-    function parseSearchRaw() {
-      const href = window.location.href;
-      const qIndex = href.indexOf("?");
-      if (qIndex === -1) return "";
-      const hashIndex = href.indexOf("#", qIndex);
-      return hashIndex === -1 ? href.slice(qIndex + 1) : href.slice(qIndex + 1, hashIndex);
-    }
-
-    function findParam(raw, key) {
-      const token = key + "=";
-      const idx = raw.indexOf(token);
-      if (idx === -1) return "";
-      const start = idx + token.length;
-      const knownKeys = [
-        "nome","pedido","entrega","cep","endereco","complemento","referencia",
-        "pagamento","horario","localizacao","observacoes","observacao","numero_pedido"
-      ];
-      let end = raw.length;
-      for (const k of knownKeys) {
-        if (k === key) continue;
-        const marker = "&" + k + "=";
-        const pos = raw.indexOf(marker, start);
-        if (pos !== -1 && pos < end) end = pos;
-      }
-      return raw.slice(start, end);
-    }
-
-    function getParamsBlindado() {
-      const raw = parseSearchRaw();
+    function getParams() {
+      const params = new URLSearchParams(window.location.search);
+      const get = (key) => decodeSafe(params.get(key) || "");
       return {
-        nome: decodeSafe(findParam(raw, "nome")),
-        pedido: decodeSafe(findParam(raw, "pedido")),
-        entrega: decodeSafe(findParam(raw, "entrega")),
-        cep: decodeSafe(findParam(raw, "cep")),
-        endereco: decodeSafe(findParam(raw, "endereco")),
-        complemento: decodeSafe(findParam(raw, "complemento")),
-        referencia: decodeSafe(findParam(raw, "referencia")),
-        pagamento: decodeSafe(findParam(raw, "pagamento")),
-        horario: decodeSafe(findParam(raw, "horario")),
-        localizacao: decodeSafe(findParam(raw, "localizacao")),
-        observacoes: decodeSafe(findParam(raw, "observacoes") || findParam(raw, "observacao")),
-        numero_pedido: decodeSafe(findParam(raw, "numero_pedido")),
-        _raw: raw
+        nome: get("nome"),
+        pedido: get("pedido"),
+        entrega: get("entrega"),
+        cep: get("cep"),
+        endereco: get("endereco"),
+        referencia: get("referencia"),
+        pagamento: get("pagamento"),
+        horario: get("horario"),
+        localizacao: get("localizacao"),
+        observacoes: get("observacoes") || get("observacao"),
+        numero_pedido: get("numero_pedido")
       };
     }
 
@@ -342,13 +301,12 @@
     }
 
     async function init() {
-      const params = getParamsBlindado();
+      const params = getParams();
 
       setText("view_nome", params.nome);
       setText("view_entrega", params.entrega);
       setText("view_cep", params.cep);
       setText("view_pedido", params.pedido);
-      setText("view_complemento", params.complemento);
       setText("view_referencia", params.referencia);
       setText("view_pagamento", params.pagamento);
       setText("view_horario", params.horario);
@@ -370,17 +328,6 @@
         }
       }
       setText("view_endereco", enderecoFinal);
-
-      const fields = [
-        params.nome, params.entrega, params.pedido, params.endereco,
-        params.referencia, params.pagamento, params.horario
-      ].filter(Boolean).length;
-
-      if (fields <= 1) {
-        const alert = document.getElementById("alert");
-        alert.style.display = "block";
-        alert.innerHTML = "Os dados parecem ter vindo incompletos. Esta versão já tenta recuperar parâmetros com espaços e caracteres especiais, mas o ideal continua sendo usar um link bem montado no chatbot.";
-      }
     }
 
     init();
