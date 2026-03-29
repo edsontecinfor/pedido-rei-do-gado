@@ -401,23 +401,37 @@
       }
     }
 
-    function getParams() {
-      const params = new URLSearchParams(window.location.search);
-      const get = (key) => decodeSafe(params.get(key) || "");
-      return {
-        nome: get("nome"),
-        pedido: get("pedido"),
-        entrega: get("entrega"),
-        cep: get("cep"),
-        endereco: get("endereco"),
-        referencia: get("referencia"),
-        pagamento: get("pagamento"),
-        horario: get("horario"),
-        localizacao: get("localizacao"),
-        observacoes: get("observacoes") || get("observacao"),
-        numero_pedido: get("numero_pedido")
-      };
-    }
+   function getParams() {
+  const raw = window.location.search.substring(1);
+
+  const obj = {};
+  raw.split("&").forEach(part => {
+    const [key, ...rest] = part.split("=");
+    if (!key) return;
+
+    let value = rest.join("=");
+
+    // Corrige espaços quebrados
+    value = value.replace(/\+/g, " ");
+
+    try {
+      value = decodeURIComponent(value);
+    } catch (e) {}
+
+    obj[key] = value;
+  });
+
+  return {
+    nome: obj.nome || "",
+    pedido: obj.pedido || "",
+    entrega: obj.entrega || "",
+    endereco: obj.endereco || "",
+    referencia: obj.referencia || "",
+    pagamento: obj.pagamento || "",
+    horario: obj.horario || "",
+    observacoes: obj.observacoes || obj.observacao || ""
+  };
+}
 
     function setText(id, value, fallback = "-") {
       document.getElementById(id).textContent = value && value.trim() ? value : fallback;
