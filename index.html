@@ -54,7 +54,7 @@
     }
     .header {
       display: grid;
-      grid-template-columns: 120px 1fr 180px;
+      grid-template-columns: 120px 1fr 220px;
       gap: 12px;
       align-items: center;
       padding-bottom: 10px;
@@ -80,13 +80,22 @@
     .meta-row {
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
       gap: 8px;
       padding: 5px 0;
       border-bottom: 1px dashed #d1d5db;
       font-size: 12px;
     }
     .meta-row:last-child { border-bottom: 0; }
-    .meta-row strong { color: var(--muted); font-weight: 700; }
+    .meta-row strong {
+      color: var(--muted);
+      font-weight: 700;
+      min-width: 76px;
+    }
+    .meta-row span {
+      text-align: right;
+      word-break: break-word;
+    }
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -122,12 +131,12 @@
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 10px 12px;
-      min-height: 80px;
       white-space: pre-wrap;
       line-height: 1.35;
       word-break: break-word;
     }
-    .obs-box { min-height: 60px; }
+    .pedido-box { min-height: 70px; }
+    .obs-box { min-height: 52px; }
     .full { grid-column: 1 / -1; }
     .footer {
       margin-top: 12px;
@@ -146,13 +155,14 @@
       .header { grid-template-columns: 1fr; }
       .grid { grid-template-columns: 1fr; }
       .row { grid-template-columns: 1fr; gap: 4px; }
+      .meta-row span { text-align: left; }
     }
     @media print {
       body { background: #fff; font-size: 11px; }
       .toolbar { display: none !important; }
       .page { max-width: 100%; margin: 0; padding: 0; }
       .sheet { box-shadow: none; border: 0; border-radius: 0; padding: 0; }
-      .header { grid-template-columns: 95px 1fr 165px; gap: 10px; padding-bottom: 8px; }
+      .header { grid-template-columns: 95px 1fr 195px; gap: 10px; padding-bottom: 8px; }
       .brand img { max-width: 90px; }
       .title h2 { font-size: 22px; }
       .title p { font-size: 12px; }
@@ -160,8 +170,8 @@
       .card { padding: 8px 10px; }
       .card h3 { font-size: 14px; margin-bottom: 6px; }
       .row { grid-template-columns: 95px 1fr; gap: 8px; padding: 4px 0; }
-      .pedido-box { min-height: 65px; }
-      .obs-box { min-height: 45px; }
+      .pedido-box { min-height: 58px; }
+      .obs-box { min-height: 40px; }
       .footer { margin-top: 10px; padding-top: 8px; font-size: 10px; }
       a { color: var(--ink); text-decoration: none; }
     }
@@ -172,7 +182,7 @@
     <div class="toolbar">
       <div>
         <h1>Gerador de PDF - Rei do Gado</h1>
-        <p>Versão compacta para caber em 1 folha.</p>
+        <p>Versão final compacta em 1 folha.</p>
       </div>
       <div class="actions">
         <button class="btn-refresh" onclick="window.location.reload()">Atualizar</button>
@@ -190,9 +200,9 @@
           <p>Nota de pedido para separação / entrega</p>
         </div>
         <div class="meta">
-          <div class="meta-row"><strong>Nº Pedido</strong><span id="view_numero_pedido">-</span></div>
+          <div class="meta-row"><strong>Nº Pedido</strong><span id="view_numero_pedido">RG-0001</span></div>
           <div class="meta-row"><strong>Data/Hora</strong><span id="view_datahora">-</span></div>
-          <div class="meta-row"><strong>Origem</strong><span>Clickitz / WhatsApp</span></div>
+          <div class="meta-row"><strong>Origem</strong><span>clickitz.com.br/whatsapp<br>99 2018-0087</span></div>
         </div>
       </div>
 
@@ -218,9 +228,9 @@
           <div id="view_pedido" class="pedido-box">-</div>
         </div>
 
-        <div class="card full hide-if-empty" id="card_observacoes">
+        <div class="card full" id="card_observacoes">
           <h3>Observações</h3>
-          <div id="view_observacoes" class="obs-box">-</div>
+          <div id="view_observacoes" class="obs-box">Sem observações</div>
         </div>
       </div>
 
@@ -233,40 +243,18 @@
 
   <script>
     function getParams() {
-      const query = window.location.search.substring(1);
-      const result = {};
-      let lastKey = null;
-
-      query.split("&").forEach(part => {
-        if (part.includes("=")) {
-          const [key, ...rest] = part.split("=");
-          lastKey = key;
-          result[key] = rest.join("=") || "";
-        } else if (lastKey) {
-          result[lastKey] += " " + part;
-        }
-      });
-
-      const decode = (v) => {
-        try {
-          return decodeURIComponent((v || "").replace(/\+/g, " "));
-        } catch (e) {
-          return (v || "").replace(/\+/g, " ");
-        }
-      };
-
+      const params = new URLSearchParams(window.location.search);
       return {
-        nome: decode(result.nome),
-        pedido: decode(result.pedido),
-        entrega: decode(result.entrega),
-        cep: decode(result.cep),
-        endereco: decode(result.endereco),
-        referencia: decode(result.referencia),
-        pagamento: decode(result.pagamento),
-        horario: decode(result.horario),
-        localizacao: decode(result.localizacao),
-        observacoes: decode(result.observacoes || result.observacao),
-        numero_pedido: decode(result.numero_pedido)
+        nome: params.get("nome") || "",
+        pedido: params.get("pedido") || "",
+        entrega: params.get("entrega") || "",
+        cep: params.get("cep") || "",
+        endereco: params.get("endereco") || "",
+        referencia: params.get("referencia") || "",
+        pagamento: params.get("pagamento") || "",
+        horario: params.get("horario") || "",
+        localizacao: params.get("localizacao") || "",
+        observacoes: params.get("observacoes") || params.get("observacao") || ""
       };
     }
 
@@ -283,17 +271,13 @@
       }
     }
 
-    function gerarNumeroPedido(nome, pedido) {
-      const agora = new Date();
-      const data = `${agora.getFullYear()}${String(agora.getMonth()+1).padStart(2,"0")}${String(agora.getDate()).padStart(2,"0")}`;
-      const seed = `${nome}|${pedido}|${agora.getHours()}${agora.getMinutes()}${agora.getSeconds()}`;
-      let hash = 0;
-      for (let i = 0; i < seed.length; i++) {
-        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
-        hash |= 0;
-      }
-      const sufixo = String(Math.abs(hash)).slice(-4).padStart(4, "0");
-      return `RG-${data}-${sufixo}`;
+    function gerarNumeroPedido() {
+      const storageKey = "rei_do_gado_order_counter_v1_reset_0001";
+      let counter = parseInt(localStorage.getItem(storageKey) || "0", 10);
+      if (Number.isNaN(counter) || counter < 0) counter = 0;
+      counter += 1;
+      localStorage.setItem(storageKey, String(counter));
+      return `RG-${String(counter).padStart(4, "0")}`;
     }
 
     function toggleRow(id, hasValue) {
@@ -313,14 +297,13 @@
       setText("view_pagamento", params.pagamento);
       setText("view_horario", params.horario);
       setLink("view_localizacao", params.localizacao);
-      setText("view_observacoes", params.observacoes);
-      setText("view_numero_pedido", params.numero_pedido || gerarNumeroPedido(params.nome, params.pedido));
+      setText("view_observacoes", params.observacoes, "Sem observações");
+      setText("view_numero_pedido", gerarNumeroPedido());
       setText("view_datahora", new Date().toLocaleString("pt-BR"));
       setText("view_endereco", params.endereco);
 
       toggleRow("row_cep", !!params.cep);
       toggleRow("row_localizacao", !!params.localizacao);
-      toggleRow("card_observacoes", !!params.observacoes);
     }
 
     init();
