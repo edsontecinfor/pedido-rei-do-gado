@@ -208,17 +208,18 @@
         <div class="card">
           <h3>Cliente e entrega</h3>
           <div class="row"><div class="label">Cliente</div><div class="value" id="view_nome">-</div></div>
+          <div class="row"><div class="label">Telefone</div><div class="value" id="view_telefone">-</div></div>
           <div class="row"><div class="label">Entrega</div><div class="value" id="view_entrega">-</div></div>
-          <div class="row hide-if-empty" id="row_bairro"><div class="label">Bairro</div><div class="value" id="view_bairro">-</div></div>
-          <div class="row hide-if-empty" id="row_cep"><div class="label">CEP</div><div class="value" id="view_cep">-</div></div>
+          <div class="row" id="row_bairro"><div class="label">Bairro</div><div class="value" id="view_bairro">-</div></div>
+          <div class="row" id="row_cep"><div class="label">CEP</div><div class="value" id="view_cep">-</div></div>
           <div class="row"><div class="label">Endereço</div><div class="value" id="view_endereco">-</div></div>
           <div class="row"><div class="label">Referência</div><div class="value" id="view_referencia">-</div></div>
         </div>
 
         <div class="card">
           <h3>Pagamento e localização</h3>
-          <div class="row hide-if-empty" id="row_pagamento"><div class="label">Tipo de pagamento</div><div class="value" id="view_pagamento">-</div></div>
-          <div class="row hide-if-empty" id="row_localizacao"><div class="label">Localização</div><div class="value" id="view_localizacao">-</div></div>
+          <div class="row" id="row_pagamento"><div class="label">Tipo de pagamento</div><div class="value" id="view_pagamento">-</div></div>
+          <div class="row" id="row_localizacao"><div class="label">Localização</div><div class="value" id="view_localizacao">-</div></div>
         </div>
 
         <div class="card">
@@ -240,19 +241,28 @@
   </div>
 
   <script>
+    function getFirstParam(params, ...keys) {
+      for (const key of keys) {
+        const value = params.get(key);
+        if (value && String(value).trim()) return value;
+      }
+      return '';
+    }
+
     function getParams() {
       const params = new URLSearchParams(window.location.search);
       return {
-        nome: params.get('nome') || '',
-        pedido: params.get('pedido') || '',
-        entrega: params.get('entrega') || '',
-        bairro: params.get('bairro') || '',
-        cep: params.get('cep') || '',
-        endereco: params.get('endereco') || '',
-        referencia: params.get('referencia') || '',
-        pagamento: params.get('pagamento') || '',
-        localizacao: params.get('localizacao') || '',
-        observacoes: params.get('observacoes') || params.get('observacao') || ''
+        nome: getFirstParam(params, 'nome', 'nome_completo', 'cliente'),
+        telefone: getFirstParam(params, 'telefone', 'phone', 'numero', 'number', 'contactNumber'),
+        pedido: getFirstParam(params, 'pedido', 'resumo_pedido', 'itens_pedido'),
+        entrega: getFirstParam(params, 'entrega', 'tipo_entrega', 'tipoEntrega'),
+        bairro: getFirstParam(params, 'bairro'),
+        cep: getFirstParam(params, 'cep'),
+        endereco: getFirstParam(params, 'endereco'),
+        referencia: getFirstParam(params, 'referencia'),
+        pagamento: getFirstParam(params, 'pagamento', 'tipo_pagamento', 'forma_pagamento', 'formaPagamento'),
+        localizacao: getFirstParam(params, 'localizacao', 'link_localizacao', 'maps', 'mapa'),
+        observacoes: getFirstParam(params, 'observacoes', 'observacao', 'obs')
       };
     }
 
@@ -291,6 +301,7 @@
       const params = getParams();
 
       setText('view_nome', params.nome);
+      setText('view_telefone', params.telefone);
       setText('view_entrega', params.entrega);
       setText('view_bairro', params.bairro);
       setText('view_cep', params.cep);
@@ -302,11 +313,6 @@
       setText('view_numero_pedido', gerarNumeroPedido());
       setText('view_datahora', new Date().toLocaleString('pt-BR'));
       setText('view_endereco', params.endereco);
-
-      toggleRow('row_bairro', !!params.bairro);
-      toggleRow('row_cep', !!params.cep);
-      toggleRow('row_pagamento', !!params.pagamento);
-      toggleRow('row_localizacao', !!params.localizacao);
     }
 
     init();
