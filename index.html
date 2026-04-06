@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nota de Pedido - Rei do Gado</title>
-  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=7G5D3UJWFOsHNbtH0Alkah5isO3r9CUe8d04gKWFPKCLXPwCyxDAm1dvVKU_QcMiowyymjhwwKsYVDgZKYMry2l303I_WABWvEikXA7I14TKLO2uAgTaM5OMQYl6wiy9jYA82BJYtSnSZqbd0ebUFInsDDIGlTYf-43qL7Y6NHqU6W7UbMU0JA8CAxJUm4QQd62lPgAypKIi3tD5V_n1HZZatFmXByawbdFV0lq2Uy0Kqnk1IHT8pmImocNPnpz94Kx2uH99kWeoLySxBVw99A" charset="UTF-8"></script><style>
+  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=5HxkWkl-4Pi1zMp2kUKSyJlzmF3AX91THOfFSlRglghmzuJXJKoU6g0X5apb1N7vQ8YOnipGMafwr3HCqrNenWF6Zh6-EZfcA7Vudfa_L5nujUuJLawpTJflfvUTCAiZZRoIRXg3TbHZu8fy-c1DHLt_VSnJ_fGMY_ngMxh58552cVnvm56iTIFYbCzN8OSIzmhShaqJwB0LoYHUQxihNA4im7bFsW93i6m0z-VgO_yFQKUn0Ovty8dzMS5A01OvFYcGFNT3d1iNXxRkokbWXQ" charset="UTF-8"></script><style>
     :root {
       --bg: #f3f4f6;
       --card: #ffffff;
@@ -222,9 +222,8 @@
         </div>
 
         <div class="card">
-          <h3>Pagamento e atendimento</h3>
-          <div class="row"><div class="label">Pagamento</div><div class="value" id="view_pagamento">-</div></div>
-          <div class="row"><div class="label">Horário</div><div class="value" id="view_horario">-</div></div>
+          <h3>Pagamento e localização</h3>
+          <div class="row"><div class="label">Tipo de pagamento</div><div class="value" id="view_pagamento">-</div></div>
           <div class="row hide-if-empty" id="row_localizacao"><div class="label">Localização</div><div class="value" id="view_localizacao">-</div></div>
         </div>
 
@@ -258,7 +257,6 @@
         endereco: params.get("endereco") || "",
         referencia: params.get("referencia") || "",
         pagamento: params.get("pagamento") || "",
-        horario: params.get("horario") || "",
         localizacao: params.get("localizacao") || "",
         observacoes: params.get("observacoes") || params.get("observacao") || ""
       };
@@ -302,7 +300,6 @@
       setText("view_pedido", params.pedido);
       setText("view_referencia", params.referencia);
       setText("view_pagamento", params.pagamento);
-      setText("view_horario", params.horario);
       setLink("view_localizacao", params.localizacao);
       setText("view_observacoes", params.observacoes, "Sem observações");
       setText("view_numero_pedido", gerarNumeroPedido());
