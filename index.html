@@ -12,7 +12,6 @@
       --muted: #6b7280;
       --line: #e5e7eb;
       --soft: #f9fafb;
-      --blue: #2563eb;
     }
 
     * {
@@ -39,34 +38,6 @@
       padding: 0 6px;
     }
 
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-    }
-
-    .toolbar h1 {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.1;
-    }
-
-    .toolbar p {
-      margin: 2px 0 0;
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.1;
-    }
-
-    .actions {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
     button {
       border: none;
       border-radius: 6px;
@@ -77,11 +48,6 @@
       line-height: 1;
     }
 
-    .btn-refresh {
-      background: var(--blue);
-      color: #fff;
-    }
-
     .sheet {
       background: var(--card);
       border: 1px solid var(--line);
@@ -90,7 +56,6 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.04);
     }
 
-    /* Cabeçalho compacto */
     .header {
       display: grid;
       grid-template-columns: 50px 1fr 102px;
@@ -158,7 +123,6 @@
       word-break: break-word;
     }
 
-    /* Conteúdo compacto */
     .grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -286,7 +250,6 @@
         font-size: 10px;
       }
 
-      .toolbar,
       .footer-actions {
         display: none !important;
       }
@@ -313,16 +276,6 @@
 </head>
 <body>
   <div class="page">
-    <div class="toolbar">
-      <div>
-        <h1>Gerador de PDF - Rei do Gado</h1>
-        <p>Versão A6 compacta.</p>
-      </div>
-      <div class="actions">
-        <button class="btn-refresh" onclick="window.location.reload()">Atualizar</button>
-      </div>
-    </div>
-
     <div class="sheet">
       <div class="header">
         <div class="brand">
